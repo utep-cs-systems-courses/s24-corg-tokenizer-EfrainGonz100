@@ -28,3 +28,13 @@ if ( c != ' '){
  else{
    return 0;
  }
+
+/* Returns a pointer to the first character of the next 
+
+   space-separated token in zero-terminated str.  Return a zero pointer if 
+
+   str does not contain any tokens. */
+
+char *token_start(char *str);
+
+
