@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "tokenizer.h"
-#inlcude "history.h"
+#include "history.h"
 
 /* Return true (non-zero) if c is a whitespace characer
 
@@ -26,11 +26,11 @@ if ( c != '\t' || c != ' '|| c != '\0'){
    Zero terminators are not printable (therefore false) */
 
 int non_space_char(char c){
-if ( c != ' '|| != '\t' || c != '\0'){
-  return 1;
+  if (space_char(c)){
+  return 0;
  }
  else{
-   return 0;
+   return 1;
  }
 }
 
@@ -41,46 +41,55 @@ if ( c != ' '|| != '\t' || c != '\0'){
 
    str does not contain any tokens. */
 
-char *token_start(char *str){
-  int i = 0;
-  while (*(str + i){
-      if(non_space_char(*(str + i))){
-	return str + i;
-      }
-      i++;
+char *token_start(char *str)
+{
+  while (!(non_space_char(*str)))
+    {
+      if (*str == '\0')
+	{
+	  return str;
+	}
+      str++;
+      return str;
     }
-    return str + i;
-  }
 }
 
 /* Returns a pointer terminator char following *token */
 
-char *token_terminator(char *token){
-  int i = 0;
-  while(*(str + i)){
-    if( space_char(*(str+i))){
-      return str + 1;
-    }
-    i++
+char *token_terminator(char *token)
+{
+  if(space_char(*token))
+  {
+    return token;
   }
-  return str + 1:
+  else
+    {
+      while(non_space_char(*token))
+	{
+	  token++;
+	}
+    }
+return token;
 }
 
 
 /* Counts the number of tokens in the string argument. */
 
-int count_tokens(char *str){
+int count_tokens(char *str)
+{
   char *temp =  str;
   int count = 0;
   int i= 0;
-  temp  token_start(temp);
-  while (*temp){
-    if(non_space_char(*temp)){
-      count++;
+  temp = token_start(temp);
+  while (*temp)
+    {
+      if(non_space_char(*temp))
+	{
+	  count++;
+	}
+      temp = token_terminator(temp);
+      temp = token_start(temp);
     }
-    temp token_terminator(temp);
-    temp token_start(temp);
-  }
   return count;
 }
 
@@ -88,16 +97,17 @@ int count_tokens(char *str){
 
    containing <len> chars from <inStr> */
 
-char *copy_str(char *inStr, short len){
-  char *copyStr = malloc(( len + 10 * sizeof(char);
+char *copy_str(char *inStr, short len)
+{
+  char *copyStr = malloc(( len + 10 * sizeof(char)));
         int i;
-       for (i = 0; i < len; i++){
-      copyStr[i] = intStr[i];
-     }
-    copyStr[i] = '\0';
-    return copyStr;
-  }
- }
+       for (i = 0; i < len; i++)
+	 {
+	   copyStr[i] = inStr[i];
+	 }
+	   copyStr[i] = '\0';
+       return copyStr;
+
 }
 
 /* Returns a freshly allocated zero-terminated vector of freshly allocated 
@@ -118,58 +128,56 @@ char *copy_str(char *inStr, short len){
 
 */
 
-char **tokenize(char* str){
-  int size = count_token(str);
+char **tokenize(char* str)
+{
+  int size = count_tokens(str);
   char **tokens = malloc ((size + 1) * sizeof(char *));
   int i;
   int length;
   char *p = str;
-  for (i = 0; i < size; i++){
+  for (i = 0; i < size; i++)
+    {
     p = token_start(p);
     length = token_length(p);
     tokens[i] = copy_str(p, length);
     p = token_terminator(p);
-  }
+    }
   tokens[i] = '\0';
   return tokens;
 }
 
 /* Prints all tokens. */
 
-void print_tokens(char **tokens){
+void print_tokens(char **tokens)
+{
   int i = 0;
-  while (tokens[i]){
-    printf("Token[%d] = %s\n", i, tokens[i]);
-    i++;
-  }
+  while (tokens[i])
+    {
+      printf("Token[%d] = %s\n", i, tokens[i]);
+      i++;
+    }
 }
 
 /* Frees all tokens and the vector containing themx. */
 
-void free_tokens(char **tokens){
-  int i = 0;
-  while(tokens[i]){
-    free(tokens[i]);
-    i++
-  }
+void free_tokens(char **tokens)
+{
+  for (int i = 0; tokens[i] != 0; i++)
+    {
+      free(tokens[i]);
+    }
+  free(tokens);
 }
 
-int word_length(char *str)
+short token_length(char *str)
 
 {
-
-  char *tmpS = word_start(str);
-
-  char *tmpE = word_terminator(tmpS);
-
-  int i = 0;
-
-  int length = 0;
-
-  length = tmpE - tmpS;
-
-  //     printf("the size was %d",length);
-
-  return length;
-
+  char* temp = str;
+  short size = 0;
+  while (non_space_char(*temp))
+    {
+      temp++;
+      size++;
+    }
+  return size;
 }

@@ -1,16 +1,40 @@
 #include <stdio.h>
-
-
+#include <stdlib.h>
+#include "tokenizer.h"
+#include "history.h"
 
 int main() {
+  int id_tracker = 1;
+  char array [50];
 
-  char stringInput[50];
+  while (1)
+    {
+      
+      List *strings;
+      strings = init_history();
 
-  printf("Type a small sentence: \n");
+      printf("Please type a small sentence:\n ");
+      printf("$ --> ");
+      fgets(array, 49, stdin);
 
-  fgets(stringInput, sizeof(stringInput), stdin);
+      char *str = &array[0];
 
-  printf("You typed:\n %s", stringInput);
+      if (*str == 'q') // quit
+	{
+	  exit(0);
+	}
 
-  return 0;
+      char** tokenizer = tokenize(str);
+      print_tokens(tokenizer);
+
+      List *list = init_history();
+      add_history(list, str);
+      print_history(list);
+
+
+      free_tokens(tokenizer);
+      free_history(list);
+      id_tracker++;
+
+    }
 }
