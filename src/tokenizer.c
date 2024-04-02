@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "tokenizer.h"
-#include "history.h"
 
 /* Return true (non-zero) if c is a whitespace characer
 
@@ -25,13 +24,15 @@ if ( c != '\t' || c != ' '|| c != '\0'){
 
    Zero terminators are not printable (therefore false) */
 
-int non_space_char(char c){
+int non_space_char(char c)
+{
   if (space_char(c)){
   return 0;
- }
- else{
+  }
+  else
+    {
    return 1;
- }
+    }
 }
 
 
@@ -50,8 +51,8 @@ char *token_start(char *str)
 	  return str;
 	}
       str++;
-      return str;
     }
+  return str;
 }
 
 /* Returns a pointer terminator char following *token */
@@ -68,27 +69,39 @@ char *token_terminator(char *token)
 	{
 	  token++;
 	}
+      return token;
     }
-return token;
 }
 
 
 /* Counts the number of tokens in the string argument. */
 
-int count_tokens(char *str)
+int count_tokens(char** tokens)
 {
-  char *temp =  str;
-  int count = 0;
-  int i= 0;
-  temp = token_start(temp);
-  while (*temp)
+  int counter = 0;
+
+  while (*tokens != NULL)
     {
-      if(non_space_char(*temp))
+      counter++;
+      tokens++;
+    }
+  return counter;
+}
+
+int count_words(char *str)
+{
+  if ((str!=NULL) && (str[0] == '\0'))
+    {
+      return 0;
+    }
+  int count = 1;
+
+  while(*str++)
+    {
+      if (*str == ' ')
 	{
 	  count++;
 	}
-      temp = token_terminator(temp);
-      temp = token_start(temp);
     }
   return count;
 }
@@ -99,15 +112,16 @@ int count_tokens(char *str)
 
 char *copy_str(char *inStr, short len)
 {
-  char *copyStr = malloc(( len + 10 * sizeof(char)));
-        int i;
-       for (i = 0; i < len; i++)
-	 {
-	   copyStr[i] = inStr[i];
-	 }
-	   copyStr[i] = '\0';
-       return copyStr;
+  char *copy = (char*)malloc((len+1)*sizeof(char));
+  short counter = 0;
 
+  for (int i = 0; i < len; i++)
+    {
+      copy[counter] = inStr[counter];
+      counter++;
+    }
+  copy[counter] = '\0';
+  return copy;
 }
 
 /* Returns a freshly allocated zero-terminated vector of freshly allocated 
@@ -128,34 +142,47 @@ char *copy_str(char *inStr, short len)
 
 */
 
-char **tokenize(char* str)
+char** tokenize(char* str)
 {
-  int size = count_tokens(str);
-  char **tokens = malloc ((size + 1) * sizeof(char *));
-  int i;
-  int length;
-  char *p = str;
-  for (i = 0; i < size; i++)
+  int count = count_words(str);
+  char** tokens = (char**)malloc((count+1) * (sizeof(char*)));
+  char* temp = str;
+  
+  for (int i = 0; i < count; i++)
     {
-    p = token_start(p);
-    length = token_length(p);
-    tokens[i] = copy_str(p, length);
-    p = token_terminator(p);
+      temp = word_start(temp);
+      tokens[i] = copy_str(temp, (word_terminator(temp) - word_start(temp)));
+      temp = word_terminator(temp);
     }
-  tokens[i] = '\0';
+  tokens[count] = '\0';
   return tokens;
 }
 
 /* Prints all tokens. */
 
-void print_tokens(char **tokens)
+void print_tokens(char** tokens)
 {
-  int i = 0;
-  while (tokens[i])
+  int end = count_tokens(tokens);
+  int counter = 0;
+
+
+  printf("Tokens: %d\n", end+1);
+  while (counter < end)
     {
-      printf("Token[%d] = %s\n", i, tokens[i]);
-      i++;
+      if (counter == (end-1))
+	{
+	  printf("token[%d] = %s", counter, *tokens);
+	  printf("token[%d] = 0\n", counter+1);
+	  counter++;
+	}
+      else
+	{
+	  printf("token[%d] = %s\n",counter, *tokens);
+	  counter++;
+	  tokens++;
+	}
     }
+  printf("-------------\n");
 }
 
 /* Frees all tokens and the vector containing themx. */
